@@ -51,7 +51,7 @@ class Lists {
         if(!in_array($list, Lists::all()))
             return [];
 
-        $output = `bash -c '{$api_bin}list_members {$list}'` ?: '';
+        $output = `bash -c '{$api_bin}list_members "{$list}"'` ?: '';
         if (strpos($output, 'No such list:') === false) {
             return preg_split("/[\s]+/", $output, -1, PREG_SPLIT_NO_EMPTY);
         } else return [];
@@ -66,7 +66,7 @@ class Lists {
         if(!in_array($list, Lists::all()))
             return false;
 
-        $output = `bash -c '{$api_bin}add_members -r - {$list} <<< {$email}'` ?: '';
+        $output = `bash -c '{$api_bin}add_members -r - "{$list}" <<< {$email}'` ?: '';
         return (strpos($output, 'Subscribed:') !== false);
     }
 
@@ -76,7 +76,7 @@ class Lists {
         $api_bin = MAIL_BIN; // TODO: remove
         $email = preg_replace('/[^a-z0-9@_+.-]/i', '_', $email);
 
-        $output = `bash -c '{$api_bin}find_member {$email}'` ?: '';
+        $output = `bash -c '{$api_bin}find_member "{$email}"'` ?: '';
         if ($output !== '') {
             $output = preg_replace('/([\s\S]*found in:\n)/i', '', $output);
             $output = preg_split("/[\s]+/", $output, -1, PREG_SPLIT_NO_EMPTY);
@@ -109,7 +109,7 @@ class Lists {
         if(!in_array($list, Lists::all()))
             return false;
 
-        $output = `bash -c '{$api_bin}remove_members -f - {$list} <<< {$email}'` ?: '';
+        $output = `bash -c '{$api_bin}remove_members -f - "{$list}" <<< {$email}'` ?: '';
         return (strpos($output, 'No such member:') === false);
     }
 }

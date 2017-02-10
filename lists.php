@@ -27,14 +27,20 @@ define('MAIL_BIN', '/var/lib/mailman/bin/');
 class Lists {
     protected function __construct() {}
     protected function __clone() {}
-    
+
     // List all available mailing lists.
     // Returns the array of all mailing lists.
-    public static function all(): array {
+    public static function all(bool $names = false): array {
         $api_bin = MAIL_BIN; // TODO: remove
 
-        $output = `bash -c '{$api_bin}list_lists -a -b'` ?: '';
-        return preg_split("/[\s]+/", $output, -1, PREG_SPLIT_NO_EMPTY);
+        $output = `bash -c '{$api_bin}list_lists -a'` ?: '';
+        $output = preg_replace('/(?:[\S]* matching mailing lists found:[\n]*)/i', '', $output);
+        preg_match_all('/(?:(?:[\s]*)([\S]*) - ([^\n]*)(?:[\n]*))/i', $output, $matches);
+
+        $matches = array_combine($matches[1], $matches[2]);
+        $matches = array_change_key_case($matches, CASE_LOWER);
+        if ($names) return $matches;
+        else return array_keys($matches);
     }
 
     // Lists all members of a given mailing $list.

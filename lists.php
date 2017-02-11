@@ -80,7 +80,13 @@ class Lists {
         if ($output !== '') {
             $output = preg_replace('/([\s\S]*found in:\n)/i', '', $output);
             $output = preg_split("/[\s]+/", $output, -1, PREG_SPLIT_NO_EMPTY);
-            return $output;
+
+            // Make sure we don't expose private lists.
+            $mask = Lists::all();
+            $output = array_filter($output, function($v) use (&$mask) {
+                return in_array($v, $mask);
+            });
+            return array_values($output);
         } else return [];
     }
 
